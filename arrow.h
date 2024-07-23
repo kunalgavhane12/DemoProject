@@ -16,8 +16,7 @@ class Arrow : public QGraphicsLineItem
 public:
     enum { Type = UserType + 4 };
 
-    Arrow(CustomItem *startItem, CustomItem *endItem,
-      QGraphicsItem *parent = nullptr);
+    Arrow(CustomItem *startItem, CustomItem *endItem, QGraphicsItem *parent = nullptr);
 
     int type() const override { return Type; }
     QRectF boundingRect() const override;

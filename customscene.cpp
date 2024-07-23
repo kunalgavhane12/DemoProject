@@ -102,13 +102,75 @@ void CustomScene::deleteItems(QList<QGraphicsItem*> const& items)
 
 void CustomScene::saveToXml(QDomDocument &doc, QDomElement &root)
 {
+    QDomElement sceneElement = doc.createElement("Scene");
+    root.appendChild(sceneElement);
 
+    foreach (QGraphicsItem *item, items()) {
+        if (CustomItem *customItem = qgraphicsitem_cast<CustomItem *>(item)) {
+            QDomElement itemElement = doc.createElement("CustomItem");
+            itemElement.setAttribute("id", customItem->id());
+            itemElement.setAttribute("type", customItem->customType());
+            itemElement.setAttribute("x", customItem->pos().x());
+            itemElement.setAttribute("y", customItem->pos().y());
+            sceneElement.appendChild(itemElement);
+        } else if (Arrow *arrow = qgraphicsitem_cast<Arrow *>(item)) {
+            QDomElement arrowElement = doc.createElement("Arrow");
+            arrowElement.setAttribute("startItemId", arrow->startItem()->id());
+            arrowElement.setAttribute("endItemId", arrow->endItem()->id());
+            arrowElement.setAttribute("lineColor", arrow->getColor().name());
+            sceneElement.appendChild(arrowElement);
+        }
+    }
 }
 
 void CustomScene::loadFromXml(const QDomElement &root)
 {
+    QDomElement sceneElement = root.firstChildElement("Scene");
+    QDomNodeList itemList = sceneElement.childNodes();
 
+    // First pass: Create all CustomItems and store them in a map by their ID
+    QMap<int, CustomItem*> itemMap;
+    for (int i = 0; i < itemList.count(); i++) {
+        QDomElement itemElement = itemList.at(i).toElement();
+        QString tagName = itemElement.tagName();
+
+        if (tagName == "CustomItem") {
+            int id = itemElement.attribute("id").toInt();
+            CustomItem::CustomType type = static_cast<CustomItem::CustomType>(itemElement.attribute("type").toInt());
+            CustomItem* customItem = new CustomItem(type, myItemMenu);
+            customItem->setId(id);
+            customItem->setPos(itemElement.attribute("x").toFloat(), itemElement.attribute("y").toFloat());
+            addItem(customItem);
+            itemMap[id] = customItem;
+        }
+    }
+
+    // Second pass: Create all Arrows using the previously created CustomItems
+    for (int i = 0; i < itemList.count(); i++) {
+        QDomElement itemElement = itemList.at(i).toElement();
+        QString tagName = itemElement.tagName();
+
+        if (tagName == "Arrow") {
+            int startItemId = itemElement.attribute("startItemId").toInt();
+            int endItemId = itemElement.attribute("endItemId").toInt();
+            QColor color(itemElement.attribute("lineColor"));
+
+            CustomItem* startItem = itemMap[startItemId];
+            CustomItem* endItem = itemMap[endItemId];
+
+            if (startItem && endItem) {
+                Arrow* arrow = new Arrow(startItem, endItem);
+                arrow->setColor(color);
+                addItem(arrow);
+                startItem->addArrow(arrow);
+                endItem->addArrow(arrow);
+                arrow->updatePosition();
+            }
+        }
+    }
 }
+
+
 
 void CustomScene::setMode(Mode mode)
 {

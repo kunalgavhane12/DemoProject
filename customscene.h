@@ -6,16 +6,13 @@
 
 #include <QDomDocument>
 #include <QGraphicsScene>
-
-QT_BEGIN_NAMESPACE
-class QGraphicsSceneMouseEvent;
-class QMenu;
-class QPointF;
-class QGraphicsLineItem;
-class QFont;
-class QGraphicsTextItem;
-class QColor;
-QT_END_NAMESPACE
+#include <QGraphicsSceneMouseEvent>
+#include <QMenu>
+#include <QPointF>
+#include <QGraphicsLineItem>
+#include <QFont>
+#include <QGraphicsTextItem>
+#include <QColor>
 
 class CustomScene : public QGraphicsScene
 {

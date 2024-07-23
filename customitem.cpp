@@ -8,12 +8,14 @@
 #include <QDebug>
 #include <QStyleOptionGraphicsItem>
 
-CustomItem::CustomItem(CustomType customType, QMenu *contextMenu,
-                       QGraphicsItem *parent)
+int CustomItem::idCounter = 0;
+
+CustomItem::CustomItem(CustomType customType, QMenu *contextMenu, QGraphicsItem *parent)
     : QGraphicsPolygonItem(parent)
 {
     myCustomType = customType;
     myContextMenu = contextMenu;
+    myId = idCounter++;
 
     QPainterPath path;
     switch (myCustomType) {
@@ -251,61 +253,61 @@ QPolygonF CustomItem::scaledPolygon(const QPolygonF& old, CustomItem::Direction 
     qreal scaleWidth, scaleHeight;
     switch(direction)
     {
-        case TopLeft:
-        {
-            QPointF fixPoint = old.boundingRect().bottomRight();
-            scaleWidth = (fixPoint.x() - newPos.x()) / oldWidth;
-            scaleHeight = (fixPoint.y() - newPos.y()) / oldHeight;
-            break;
-        }
-        case Top:
-        {
-            QPointF fixPoint = old.boundingRect().bottomLeft();
-            scaleWidth = 1;
-            scaleHeight = (fixPoint.y() - newPos.y()) / oldHeight;
-            break;
-        }
-        case TopRight:
-        {
-            QPointF fixPoint = old.boundingRect().bottomLeft();
-            scaleWidth = (newPos.x() - fixPoint.x()) / oldWidth;
-            scaleHeight = (fixPoint.y() - newPos.y() ) / oldHeight;
-            break;
-        }
-        case Right:
-        {
-            QPointF fixPoint = old.boundingRect().bottomLeft();
-            scaleWidth = (newPos.x() - fixPoint.x()) / oldWidth;
-            scaleHeight = 1;
-            break;
-        }
-        case BottomRight:
-        {
-            QPointF fixPoint = old.boundingRect().topLeft();
-            scaleWidth = (newPos.x() - fixPoint.x()) / oldWidth;
-            scaleHeight = (newPos.y() - fixPoint.y()) / oldHeight;
-            break;
-        }
-        case Bottom:
-        {
-            QPointF fixPoint = old.boundingRect().topLeft();
-            scaleWidth = 1;
-            scaleHeight = (newPos.y() - fixPoint.y()) / oldHeight;
-            break;
-        }
-        case BottomLeft: {
-            QPointF fixPoint = old.boundingRect().topRight();
-            scaleWidth = (fixPoint.x() - newPos.x()) / oldWidth;
-            scaleHeight = (newPos.y() - fixPoint.y()) / oldHeight;
-            break;
-        }
-        case Left:
-        {
-            QPointF fixPoint = old.boundingRect().bottomRight();
-            scaleWidth = (fixPoint.x() - newPos.x()) / oldWidth;
-            scaleHeight = 1;
-            break;
-        }
+    case TopLeft:
+    {
+        QPointF fixPoint = old.boundingRect().bottomRight();
+        scaleWidth = (fixPoint.x() - newPos.x()) / oldWidth;
+        scaleHeight = (fixPoint.y() - newPos.y()) / oldHeight;
+        break;
+    }
+    case Top:
+    {
+        QPointF fixPoint = old.boundingRect().bottomLeft();
+        scaleWidth = 1;
+        scaleHeight = (fixPoint.y() - newPos.y()) / oldHeight;
+        break;
+    }
+    case TopRight:
+    {
+        QPointF fixPoint = old.boundingRect().bottomLeft();
+        scaleWidth = (newPos.x() - fixPoint.x()) / oldWidth;
+        scaleHeight = (fixPoint.y() - newPos.y() ) / oldHeight;
+        break;
+    }
+    case Right:
+    {
+        QPointF fixPoint = old.boundingRect().bottomLeft();
+        scaleWidth = (newPos.x() - fixPoint.x()) / oldWidth;
+        scaleHeight = 1;
+        break;
+    }
+    case BottomRight:
+    {
+        QPointF fixPoint = old.boundingRect().topLeft();
+        scaleWidth = (newPos.x() - fixPoint.x()) / oldWidth;
+        scaleHeight = (newPos.y() - fixPoint.y()) / oldHeight;
+        break;
+    }
+    case Bottom:
+    {
+        QPointF fixPoint = old.boundingRect().topLeft();
+        scaleWidth = 1;
+        scaleHeight = (newPos.y() - fixPoint.y()) / oldHeight;
+        break;
+    }
+    case BottomLeft: {
+        QPointF fixPoint = old.boundingRect().topRight();
+        scaleWidth = (fixPoint.x() - newPos.x()) / oldWidth;
+        scaleHeight = (newPos.y() - fixPoint.y()) / oldHeight;
+        break;
+    }
+    case Left:
+    {
+        QPointF fixPoint = old.boundingRect().bottomRight();
+        scaleWidth = (fixPoint.x() - newPos.x()) / oldWidth;
+        scaleHeight = 1;
+        break;
+    }
     }
     QTransform trans;
     trans.scale(scaleWidth, scaleHeight);

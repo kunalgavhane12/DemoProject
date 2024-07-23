@@ -3,13 +3,11 @@
 
 #include <QGraphicsTextItem>
 #include <QPen>
+#include <QFocusEvent>
+#include <QGraphicsItem>
+#include <QGraphicsScene>
+#include <QGraphicsSceneMouseEvent>
 
-QT_BEGIN_NAMESPACE
-class QFocusEvent;
-class QGraphicsItem;
-class QGraphicsScene;
-class QGraphicsSceneMouseEvent;
-QT_END_NAMESPACE
 
 class CustomTextItem : public QGraphicsTextItem
 {
