@@ -1,0 +1,26 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Icon/background1.png</file>
+        <file>Icon/background2.png</file>
+        <file>Icon/background3.png</file>
+        <file>Icon/background4.png</file>
+        <file>Icon/bold.png</file>
+        <file>Icon/bringtofront.png</file>
+        <file>Icon/copy.png</file>
+        <file>Icon/cut.png</file>
+        <file>Icon/delete.png</file>
+        <file>Icon/floodfill.png</file>
+        <file>Icon/group.png</file>
+        <file>Icon/italic.png</file>
+        <file>Icon/linecolor.png</file>
+        <file>Icon/linepointer.png</file>
+        <file>Icon/paste.png</file>
+        <file>Icon/pointer.png</file>
+        <file>Icon/redo.png</file>
+        <file>Icon/sendtoback.png</file>
+        <file>Icon/textpointer.png</file>
+        <file>Icon/underline.png</file>
+        <file>Icon/undo.png</file>
+        <file>Icon/ungroup.png</file>
+    </qresource>
+</RCC>
