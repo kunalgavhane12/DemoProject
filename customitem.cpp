@@ -15,6 +15,13 @@ int CustomItem::idCounter = 0;
 CustomItem::CustomItem(CustomType customType, QMenu *contextMenu, QGraphicsItem *parent)
     : QGraphicsPolygonItem(parent)
 {
+     rectangleArea = 0;
+     rectanglePerimeter = 0;
+     circleArea = 0;
+     circleCircumference = 0;
+     triangleArea = 0;
+     trianglePerimeter = 0;
+
     myCustomType = customType;
     myContextMenu = contextMenu;
     myId = idCounter++;
@@ -60,6 +67,7 @@ CustomItem::CustomItem(CustomType customType, QMenu *contextMenu, QGraphicsItem 
     setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
 }
+
 
 
 void CustomItem::removeArrow(Arrow *arrow)
@@ -125,6 +133,64 @@ CustomItem* CustomItem::clone()
     cloned->setBrush(brush());
     cloned->setZValue(zValue());
     return cloned;
+}
+
+void CustomItem::setRectangleProperty()
+{
+    bool ok;
+
+    double length = QInputDialog::getDouble(nullptr, "Enter Rectangle Length:", "Length:", 0, 0, 10000, 2, &ok);
+    if (!ok) return;
+
+    double width = QInputDialog::getDouble(nullptr, "Enter Rectangle Width:", "Width:", 0, 0, 10000, 2, &ok);
+    if (!ok) return;
+
+    rectangleArea = length * width;
+    rectanglePerimeter = 2 * (length + width);
+    qDebug() << "Rectangle Property" << length << " " << width << rectangleArea << rectanglePerimeter;
+}
+
+void CustomItem::setCircleProperty()
+{
+    bool ok;
+    double radius = QInputDialog::getDouble(nullptr, "Enter Circle Radius:", "Radius:", 0, 0, 10000, 2, &ok);
+    if (!ok) return;
+
+    circleArea = 3.14 * radius * radius;
+    circleCircumference = 2 * 3.14 * radius;
+    qDebug() << "Circle Property" << circleArea << " " << circleCircumference;
+}
+
+void CustomItem::setTriangleProperty()
+{
+    bool ok;
+
+    double base = QInputDialog::getDouble(nullptr, "Enter Base:", "Base:", 0, 0, 10000, 2, &ok);
+    if (!ok) return;
+
+    double height = QInputDialog::getDouble(nullptr, "Enter Height:", "Height:", 0, 0, 10000, 2, &ok);
+    if (!ok) return;
+
+    double altitude = QInputDialog::getDouble(nullptr, "Enter Altitude:", "Altitude:", 0, 0, 10000, 2, &ok);
+    if (!ok) return;
+
+    double hypotenuse = QInputDialog::getDouble(nullptr, "Enter Hypotenuse:", "Hypotenuse:", 0, 0, 10000, 2, &ok);
+    if (!ok) return;
+
+    triangleArea = (base * height) / 2;
+    trianglePerimeter = altitude + base + hypotenuse;
+
+    qDebug() << "Triangle Property " << base << " " << height << " " << triangleArea << " " << trianglePerimeter;
+}
+
+void CustomItem::setPolygonProperty()
+{
+    qDebug() << "Polygon Property";
+}
+
+void CustomItem::setDiamondProperty()
+{
+    qDebug() << "Diamond Property";
 }
 
 
@@ -251,65 +317,50 @@ QVariant CustomItem::itemChange(GraphicsItemChange change, const QVariant &value
             arrow->updatePosition();
         }
     }
-
-    return value;
+    return QGraphicsPolygonItem::itemChange(change, value);
 }
+
 
 void CustomItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event);
 
     switch (myCustomType) {
-    case Output:
-        break;
+        case Diamond:
+            qDebug() << "Diamond double-clicked";
+            setDiamondProperty();
+            break;
+        case Rectangle:
+            qDebug() << "Rectangle double-clicked";
+            setRectangleProperty();
+            break;
+        case Triangle:
+            qDebug() << "Triangle double-clicked";
+            setTriangleProperty();
+            break;
+        case Circle:
+            qDebug() << "Circle double-clicked";
+            setCircleProperty();
+            break;
+        case Polygon:
+            qDebug() << "Polygon double-clicked";
+            setPolygonProperty();
+            break;
+        case Output:
+            qDebug() << "Output double-clicked";
+            performArithmeticOperation();
+            break;
+        case Io:
+            qDebug() << "IO double-clicked";
+            bool ok;
+            QString text = QInputDialog::getText(nullptr, "Set Value", "Enter the value:", QLineEdit::Normal, "", &ok);
+            break;
 
-    case Diamond:
-    {
-        bool ok;
-        QStringList operations = {"+", "-", "*", "/"};
-        QString operation = QInputDialog::getItem(nullptr, "Set Operation",
-                                                  "Select an operation:",
-                                                  operations, 0, false, &ok);
-        if (ok && !operation.isEmpty())
-        {
-            this->operation = operation;
-        }
-    }
-        break;
-
-    case Rectangle:
-    {
-
-        if (areConnectedToConditionalItems())
-        {
-            result = performArithmeticOperation();
-
-            qDebug() << "Result: " << result;
-
-        }
-    }
-        break;
-
-    case Io:
-    {
-        bool ok;
-        QString text = QInputDialog::getText(nullptr, "Set Value",
-                                             "Enter the value:", QLineEdit::Normal,"", &ok);
-        if (ok && !text.isEmpty()) {
-            this->value = text;
-        }
-    }
-        break;
-
-    default:
-        break;
     }
 }
 
 
-
-QPolygonF CustomItem::scaledPolygon(const QPolygonF& old, CustomItem::Direction direction,
-                                    const QPointF& newPos)
+QPolygonF CustomItem::scaledPolygon(const QPolygonF& old, CustomItem::Direction direction, const QPointF& newPos)
 {
     qreal oldWidth = old.boundingRect().width();
     qreal oldHeight = old.boundingRect().height();
@@ -389,31 +440,43 @@ bool CustomItem::areConnectedToConditionalItems()
     return false;
 }
 
-double CustomItem::performArithmeticOperation()
-{
-    double result = 0;
-    foreach (Arrow *arrow, arrows)
-    {
+void CustomItem::performArithmeticOperation() {
+    qDebug() << "Performing arithmetic operation";
+    foreach (Arrow *arrow, arrows) {
         CustomItem *startItem = dynamic_cast<CustomItem*>(arrow->startItem());
         CustomItem *endItem = dynamic_cast<CustomItem*>(arrow->endItem());
 
         if (startItem && endItem)
         {
-            if (startItem->myCustomType == Diamond || endItem->myCustomType == Diamond)
+            qDebug() << "Start Item Type: " << startItem->myCustomType << " End Item Type: " << endItem->myCustomType;
+            if (startItem->myCustomType == Rectangle && endItem->myCustomType == Output)
             {
-                value1 = startItem->value.toDouble();
-                value2 = endItem->value.toDouble();
-                if (operation == "+")
-                    result = value1 + value2;
-                else if (operation == "-")
-                    result = value1 - value2;
-                else if (operation == "*")
-                    result = value1 * value2;
-                else if (operation == "/")
-                    result = value1 / value2;
+                qDebug() << "Rectangle Property" << rectangleArea << " " << rectanglePerimeter;
+            }
+            else if (startItem->myCustomType == Triangle && endItem->myCustomType == Output)
+            {
+                qDebug() << "Triangle Property" << triangleArea << " " << trianglePerimeter;
+            }
+            else if (startItem->myCustomType == Circle && endItem->myCustomType == Output)
+            {
+                qDebug() << "Circle Property" << circleArea << " " << circleCircumference;
+            }
+            else if (startItem->myCustomType == Diamond && endItem->myCustomType == Output)
+            {
+                qDebug() << "Diamond item is connected to Output";
+            }
+            else if (startItem->myCustomType == Polygon && endItem->myCustomType == Output)
+            {
+                qDebug() << "Polygon item is connected to Output";
+            }
+            else
+            {
+                qDebug() << "Unhandled arithmetic operation case";
             }
         }
+        else
+        {
+            qDebug() << "Arrow connection issue: startItem or endItem is null";
+        }
     }
-    return result;
 }
-

@@ -46,6 +46,13 @@ private slots:
     void redo();
     void groupItems();
     void ungroupItems();
+
+    void rectangleItems();
+    void circleItems();
+    void triangleItems();
+    void diamondItems();
+    void polygonItems();
+
     void pointerGroupClicked(int id);
     void bringToFront();
     void sendToBack();
@@ -73,6 +80,7 @@ private:
     void createActions();
     void createMenus();
     void createToolbars();
+
     void setCurrentFile(const QString &fileName);
     QWidget *createBackgroundCellWidget(const QString &text, const QString &image);
     QWidget *createCellWidget(const QString &text, CustomItem::CustomType type);
@@ -132,6 +140,13 @@ private:
     QToolButton *fontColorToolButton;
     QToolButton *fillColorToolButton;
     QToolButton *lineColorToolButton;
+
+    QAction *rectangleAction;
+    QAction *circleAction;
+    QAction *triangleAction;
+    QAction *polygonAction;
+    QAction *diamondAction;
+
     QAction *boldAction;
     QAction *underlineAction;
     QAction *italicAction;

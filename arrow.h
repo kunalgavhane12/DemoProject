@@ -31,6 +31,7 @@ public:
 
     void updatePosition();
 
+    QPointF calculateIntersectionPoint(const QPolygonF &polygon, CustomItem *item, const QLineF &line);
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0) override;
 

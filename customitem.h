@@ -23,13 +23,11 @@ class CustomItem : public QGraphicsPolygonItem
 public:
     enum { Type = UserType + 15 };
 
-    enum CustomType { Rectangle, Circle, Triangle, Diamond, Output, Io};
+    enum CustomType { Rectangle, Circle, Triangle, Diamond, Polygon, Output, Io};
 
     enum Direction {TopLeft = 0, Top, TopRight, Left, Right, BottomLeft, Bottom, BottomRight };
 
     CustomItem(CustomType customType, QMenu *contextMenu, QGraphicsItem *parent = nullptr);
-    CustomItem(const CustomItem &customItem);
-
 
     void removeArrow(Arrow *arrow);
     void removeArrows();
@@ -50,6 +48,12 @@ public:
     QList<QPointF> resizeHandlePoints();
     bool isCloseEnough(QPointF const& p1, QPointF const& p2);
     CustomItem* clone();
+
+    void setRectangleProperty();
+    void setCircleProperty();
+    void setTriangleProperty();
+    void setPolygonProperty();
+    void setDiamondProperty();
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
@@ -82,12 +86,16 @@ private:
     QPolygonF previousPolygon;
     bool isResized = false;
     QString  operation;
+
     bool areConnectedToConditionalItems();
-    double performArithmeticOperation();
-    double result;
-    QString value;
-    double value1;
-    double value2;
+    void performArithmeticOperation();
+
+    double rectangleArea;
+    double rectanglePerimeter;
+    double circleArea;
+    double circleCircumference;
+    double triangleArea;
+    double trianglePerimeter;
 };
 
 #endif // customitem_H

@@ -278,6 +278,32 @@ void MainWindow::ungroupItems()
     backupUndostack();
 }
 
+void MainWindow::rectangleItems()
+{
+
+
+}
+
+void MainWindow::circleItems()
+{
+
+}
+
+void MainWindow::triangleItems()
+{
+
+}
+
+void MainWindow::polygonItems()
+{
+
+}
+
+void MainWindow::diamondItems()
+{
+
+}
+
 void MainWindow::pointerGroupClicked(int)
 {
     foreach(QAbstractButton* b, buttonGroup->buttons())
@@ -590,6 +616,22 @@ void MainWindow::createActions()
     ungroupAction = new QAction(QIcon(":Icon/ungroup.png"), tr("U&ngroup"), this);
     ungroupAction->setStatusTip(tr("Ungroup graphic items"));
     connect(ungroupAction, SIGNAL(triggered()), this, SLOT(ungroupItems()));
+
+    rectangleAction = new QAction (tr("R&ectangle"), this);
+    connect(rectangleAction, SIGNAL(triggered()), this, SLOT(rectangleItems()));
+
+    circleAction = new QAction(tr("C&ircle"), this);
+    connect(circleAction, SIGNAL(triggered()), this, SLOT(circleItems()));
+
+    triangleAction = new QAction(tr("T&riangle"), this);
+    connect(triangleAction, SIGNAL(triggered()), this, SLOT(triangleItems()));
+
+    diamondAction = new QAction(tr("D&iamond"), this);
+    connect(diamondAction, SIGNAL(triggered()), this, SLOT(diamondItems()));
+
+    polygonAction = new QAction(tr("P&olygon"), this);
+    connect(polygonAction, SIGNAL(triggered()), this, SLOT(polygonItems()));
+
 }
 
 void MainWindow::createMenus()
@@ -617,6 +659,14 @@ void MainWindow::createMenus()
     itemMenu->addSeparator();
     itemMenu->addAction(toFrontAction);
     itemMenu->addAction(sendBackAction);
+
+    properties = menuBar()->addMenu(tr("&Properties"));
+    properties->addAction(rectangleAction);
+    properties->addAction(circleAction);
+    properties->addAction(triangleAction);
+    properties->addAction(diamondAction);
+    properties->addAction(polygonAction);
+
 
     aboutMenu = menuBar()->addMenu(tr("&Help"));
     aboutMenu->addAction(aboutAction);
