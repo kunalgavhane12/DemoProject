@@ -2,6 +2,9 @@
 #define ARROW_H
 
 #include <QGraphicsLineItem>
+
+#include "customitem.h"
+#include <QGraphicsLineItem>
 #include <QGraphicsPolygonItem>
 #include <QGraphicsLineItem>
 #include <QGraphicsScene>
@@ -9,35 +12,34 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPainterPath>
 
-#include "customitem.h"
 
 class Arrow : public QGraphicsLineItem
 {
 public:
     enum { Type = UserType + 4 };
 
-    Arrow(CustomItem *startItem, CustomItem *endItem, QGraphicsItem *parent = nullptr);
+    Arrow(CustomItem *startItem, CustomItem *endItem,QGraphicsItem *parent = 0);
 
     int type() const override { return Type; }
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void setColor(const QColor &color) { myColor = color; }
-    const QColor getColor() { return myColor; }
+    QColor getColor() {return myColor;}
     CustomItem *startItem() const { return myStartItem; }
     CustomItem *endItem() const { return myEndItem; }
+    bool operator==(Arrow &arrow);
 
     void updatePosition();
 
 protected:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-               QWidget *widget = nullptr) override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0) override;
 
 private:
     CustomItem *myStartItem;
     CustomItem *myEndItem;
     QColor myColor;
+
     QPolygonF arrowHead;
 };
-
 
 #endif // ARROW_H

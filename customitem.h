@@ -23,11 +23,13 @@ class CustomItem : public QGraphicsPolygonItem
 public:
     enum { Type = UserType + 15 };
 
-    enum CustomType { Step, Conditional, StartEnd, Io };
+    enum CustomType { Rectangle, Circle, Triangle, Diamond, Output, Io};
 
     enum Direction {TopLeft = 0, Top, TopRight, Left, Right, BottomLeft, Bottom, BottomRight };
 
     CustomItem(CustomType customType, QMenu *contextMenu, QGraphicsItem *parent = nullptr);
+    CustomItem(const CustomItem &customItem);
+
 
     void removeArrow(Arrow *arrow);
     void removeArrows();
@@ -58,6 +60,9 @@ protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
+protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+
 private:
     QPolygonF scaledPolygon(QPolygonF const& old, Direction direction, QPointF const& newPos);
 
@@ -76,6 +81,13 @@ private:
     bool isMoved = false;
     QPolygonF previousPolygon;
     bool isResized = false;
+    QString  operation;
+    bool areConnectedToConditionalItems();
+    double performArithmeticOperation();
+    double result;
+    QString value;
+    double value1;
+    double value2;
 };
 
 #endif // customitem_H

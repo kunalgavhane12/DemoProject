@@ -84,3 +84,13 @@ void CustomTextItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     qDebug() << "text end moving";
     QGraphicsTextItem::mouseReleaseEvent(event);
 }
+
+const QColor &CustomTextItem::getMyColor() const
+{
+    return myColor;
+}
+
+void CustomTextItem::setMyColor(const QColor &newMyColor)
+{
+    myColor = newMyColor;
+}

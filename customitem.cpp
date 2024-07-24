@@ -7,6 +7,8 @@
 #include <QPainter>
 #include <QDebug>
 #include <QStyleOptionGraphicsItem>
+#include <QInputDialog>
+#include <QMessageBox>
 
 int CustomItem::idCounter = 0;
 
@@ -19,7 +21,7 @@ CustomItem::CustomItem(CustomType customType, QMenu *contextMenu, QGraphicsItem 
 
     QPainterPath path;
     switch (myCustomType) {
-    case StartEnd:
+    case Output:
         path.moveTo(200, 50);
         path.arcTo(150, 0, 50, 50, 0, 90);
         path.arcTo(50, 0, 50, 50, 90, 90);
@@ -28,20 +30,28 @@ CustomItem::CustomItem(CustomType customType, QMenu *contextMenu, QGraphicsItem 
         path.lineTo(200, 50);
         myPolygon = path.toFillPolygon().translated(-125, -50);
         break;
-    case Conditional:
-        myPolygon << QPointF(-100, 0) << QPointF(0, 100)
-                  << QPointF(100, 0) << QPointF(0, -100)
-                  << QPointF(-100, 0);
+    case Diamond:
+        myPolygon << QPointF(-75, 0) << QPointF(0, 75)
+                  << QPointF(75, 0) << QPointF(0, -75)
+                  << QPointF(-75, 0);
         break;
-    case Step:
-        myPolygon << QPointF(-100, -100) << QPointF(100, -100)
-                  << QPointF(100, 100) << QPointF(-100, 100)
-                  << QPointF(-100, -100);
+    case Rectangle:
+        myPolygon << QPointF(-60, -60) << QPointF(60, -60)
+                  << QPointF(60, 60) << QPointF(-60, 60)
+                  << QPointF(-60, -60);
+        break;
+    case Triangle:
+        myPolygon << QPointF(0, -75) << QPointF(65, 65)
+                  << QPointF(-65, 65) << QPointF(0, -75);
+        break;
+    case Circle:
+        path.addEllipse(QPointF(0, 0), 50, 50);
+        myPolygon = path.toFillPolygon();
         break;
     default:
-        myPolygon << QPointF(-120, -80) << QPointF(-70, 80)
-                  << QPointF(120, 80) << QPointF(70, -80)
-                  << QPointF(-120, -80);
+        myPolygon << QPointF(-60, -40) << QPointF(-35, 40)
+                  << QPointF(60, 40) << QPointF(35, -40)
+                  << QPointF(-60, -40);
         break;
     }
     setPolygon(myPolygon);
@@ -245,6 +255,59 @@ QVariant CustomItem::itemChange(GraphicsItemChange change, const QVariant &value
     return value;
 }
 
+void CustomItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    Q_UNUSED(event);
+
+    switch (myCustomType) {
+    case Output:
+        break;
+
+    case Diamond:
+    {
+        bool ok;
+        QStringList operations = {"+", "-", "*", "/"};
+        QString operation = QInputDialog::getItem(nullptr, "Set Operation",
+                                                  "Select an operation:",
+                                                  operations, 0, false, &ok);
+        if (ok && !operation.isEmpty())
+        {
+            this->operation = operation;
+        }
+    }
+        break;
+
+    case Rectangle:
+    {
+
+        if (areConnectedToConditionalItems())
+        {
+            result = performArithmeticOperation();
+
+            qDebug() << "Result: " << result;
+
+        }
+    }
+        break;
+
+    case Io:
+    {
+        bool ok;
+        QString text = QInputDialog::getText(nullptr, "Set Value",
+                                             "Enter the value:", QLineEdit::Normal,"", &ok);
+        if (ok && !text.isEmpty()) {
+            this->value = text;
+        }
+    }
+        break;
+
+    default:
+        break;
+    }
+}
+
+
+
 QPolygonF CustomItem::scaledPolygon(const QPolygonF& old, CustomItem::Direction direction,
                                     const QPointF& newPos)
 {
@@ -312,5 +375,45 @@ QPolygonF CustomItem::scaledPolygon(const QPolygonF& old, CustomItem::Direction 
     QTransform trans;
     trans.scale(scaleWidth, scaleHeight);
     return trans.map(old);
+}
+
+bool CustomItem::areConnectedToConditionalItems()
+{
+    foreach (Arrow *arrow, arrows)
+    {
+        if (arrow->startItem()->type() == Diamond || arrow->endItem()->type() == Diamond)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+double CustomItem::performArithmeticOperation()
+{
+    double result = 0;
+    foreach (Arrow *arrow, arrows)
+    {
+        CustomItem *startItem = dynamic_cast<CustomItem*>(arrow->startItem());
+        CustomItem *endItem = dynamic_cast<CustomItem*>(arrow->endItem());
+
+        if (startItem && endItem)
+        {
+            if (startItem->myCustomType == Diamond || endItem->myCustomType == Diamond)
+            {
+                value1 = startItem->value.toDouble();
+                value2 = endItem->value.toDouble();
+                if (operation == "+")
+                    result = value1 + value2;
+                else if (operation == "-")
+                    result = value1 - value2;
+                else if (operation == "*")
+                    result = value1 * value2;
+                else if (operation == "/")
+                    result = value1 / value2;
+            }
+        }
+    }
+    return result;
 }
 

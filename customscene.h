@@ -22,10 +22,12 @@ public:
     enum Mode { InsertItem, InsertLine, InsertText, MoveItem };
 
     explicit CustomScene(QMenu *itemMenu, QObject *parent = nullptr);
+
     QFont font() const { return myFont; }
     QColor textColor() const { return myTextColor; }
     QColor itemColor() const { return myItemColor; }
     QColor lineColor() const { return myLineColor; }
+
     void setLineColor(const QColor &color);
     void setTextColor(const QColor &color);
     void setItemColor(const QColor &color);
@@ -67,6 +69,7 @@ private:
     void tryLeavingStickyMode(QGraphicsItem* item, QPointF const& mousePos);
 
     CustomItem::CustomType myItemType;
+
     QMenu *myItemMenu;
     Mode myMode;
     QPointF startPoint;

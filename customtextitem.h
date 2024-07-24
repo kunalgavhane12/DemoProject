@@ -7,6 +7,7 @@
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
+#include <QColor>
 
 
 class CustomTextItem : public QGraphicsTextItem
@@ -19,11 +20,16 @@ public:
     CustomTextItem(QGraphicsItem *parent = nullptr);
 
     int type() const override { return Type; }
-
+    void setText(QString text) { contentLastTime = text; }
+    QString getText() { return contentLastTime; }
     bool contentIsUpdated() { return contentHasChanged; }
     bool positionIsUpdated() { return isMoved; }
     void setUpdated() { isMoved = false; }
+
     CustomTextItem* clone();
+
+    const QColor &getMyColor() const;
+    void setMyColor(const QColor &newMyColor);
 
 signals:
     void lostFocus(CustomTextItem *item);
@@ -40,6 +46,7 @@ protected:
 private:
     QString contentLastTime;
     QPointF positionLastTime;
+     QColor myColor;
     bool isMoved = false;
     bool contentHasChanged = false;
 };

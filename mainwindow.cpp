@@ -195,7 +195,7 @@ void MainWindow::pasteItem()
         if (item->type() != Arrow::Type)
         {
             item->setPos(item->scenePos() + QPointF(20, 20));
-            item->setZValue(item->zValue() + 0.1);  // raise a little bit
+            item->setZValue(item->zValue() + 0.1);
         }
         scene->addItem(item);
         item->setSelected(true);
@@ -222,7 +222,7 @@ void MainWindow::deleteItem()
 void MainWindow::undo()
 {
     if (undoStack.isEmpty()) return;
-    // sweep away all items
+
     scene->deleteItems(scene->items());
     QList<QGraphicsItem*> undoneItems = cloneItems(undoStack.undo());
     foreach(QGraphicsItem* item, undoneItems)
@@ -231,7 +231,7 @@ void MainWindow::undo()
         scene->addItem(item);
     }
 
-    // update arrows
+
     foreach(QGraphicsItem* item, undoneItems)
     {
         if (item->type() == Arrow::Type)
@@ -249,7 +249,6 @@ void MainWindow::redo()
         scene->addItem(item);
     }
 
-    // update arrows
     foreach(QGraphicsItem* item, redoneItems)
     {
         if (item->type() == Arrow::Type)
@@ -281,7 +280,6 @@ void MainWindow::ungroupItems()
 
 void MainWindow::pointerGroupClicked(int)
 {
-    // set all buttons in toolbox unchecked
     foreach(QAbstractButton* b, buttonGroup->buttons())
     {
         b->setChecked(false);
@@ -449,10 +447,12 @@ void MainWindow::createToolBox()
     buttonGroup->setExclusive(false);
     connect(buttonGroup, SIGNAL(buttonClicked(int)), this, SLOT(buttonGroupClicked(int)));
     QGridLayout *layout = new QGridLayout;
-    layout->addWidget(createCellWidget(tr("Conditional"), CustomItem::Conditional), 0, 0);
-    layout->addWidget(createCellWidget(tr("Process"), CustomItem::Step),0, 1);
-    layout->addWidget(createCellWidget(tr("Input/Output"), CustomItem::Io), 1, 0);
-    layout->addWidget(createCellWidget(tr("Start/End"), CustomItem::StartEnd), 1, 1);
+    layout->addWidget(createCellWidget(tr("OutPut"), CustomItem::Output), 0, 0);
+    layout->addWidget(createCellWidget(tr("Rectangle"), CustomItem::Rectangle),0, 1);
+    layout->addWidget(createCellWidget(tr("Triangle"), CustomItem::Triangle), 1, 0);
+    layout->addWidget(createCellWidget(tr("Circle"), CustomItem::Circle), 1, 1);
+    layout->addWidget(createCellWidget(tr("Polygon"), CustomItem::Io), 2, 0);
+    layout->addWidget(createCellWidget(tr("Diamond"), CustomItem::Diamond), 2, 1);
 
     QToolButton *textButton = new QToolButton;
     textButton->setCheckable(true);
@@ -464,7 +464,7 @@ void MainWindow::createToolBox()
     textLayout->addWidget(new QLabel(tr("Text")), 1, 0, Qt::AlignCenter);
     QWidget *textWidget = new QWidget;
     textWidget->setLayout(textLayout);
-    layout->addWidget(textWidget, 2, 0);
+    layout->addWidget(textWidget, 3, 0);
 
     layout->setRowStretch(3, 10);
     layout->setColumnStretch(2, 10);
@@ -514,7 +514,7 @@ void MainWindow::createActions()
 
     saveAsAction = new QAction(tr("S&ave As"), this);
     saveAsAction->setShortcuts(QKeySequence::SaveAs);
-    saveAsAction->setStatusTip(tr("Ctrl+Shift+S"));
+    saveAsAction->setShortcut(tr("Ctrl+Shift+S"));
     connect(saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
 
     toFrontAction = new QAction(QIcon(":/Icon/bringtofront.png"), tr("Bring to &Front"), this);

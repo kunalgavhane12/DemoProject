@@ -12,7 +12,7 @@ CustomScene::CustomScene(QMenu *itemMenu, QObject *parent)
 {
     myItemMenu = itemMenu;
     myMode = MoveItem;
-    myItemType = CustomItem::Step;
+    myItemType = CustomItem::Rectangle;
     line = nullptr;
     textItem = nullptr;
     myItemColor = Qt::white;
@@ -105,20 +105,38 @@ void CustomScene::saveToXml(QDomDocument &doc, QDomElement &root)
     QDomElement sceneElement = doc.createElement("Scene");
     root.appendChild(sceneElement);
 
-    foreach (QGraphicsItem *item, items()) {
-        if (CustomItem *customItem = qgraphicsitem_cast<CustomItem *>(item)) {
+    foreach (QGraphicsItem *item, items())
+    {
+        if (CustomItem *customItem = qgraphicsitem_cast<CustomItem *>(item))
+        {
             QDomElement itemElement = doc.createElement("CustomItem");
             itemElement.setAttribute("id", customItem->id());
             itemElement.setAttribute("type", customItem->customType());
             itemElement.setAttribute("x", customItem->pos().x());
             itemElement.setAttribute("y", customItem->pos().y());
+            QPointF center = customItem->boundingRect().center();
+            itemElement.setAttribute("centerX", center.x());
+            itemElement.setAttribute("centerY", center.y());
             sceneElement.appendChild(itemElement);
-        } else if (Arrow *arrow = qgraphicsitem_cast<Arrow *>(item)) {
+        }
+        else if (Arrow *arrow = qgraphicsitem_cast<Arrow *>(item))
+        {
             QDomElement arrowElement = doc.createElement("Arrow");
             arrowElement.setAttribute("startItemId", arrow->startItem()->id());
             arrowElement.setAttribute("endItemId", arrow->endItem()->id());
             arrowElement.setAttribute("lineColor", arrow->getColor().name());
+            QPointF intersectPoint = arrow->line().p1();
+            arrowElement.setAttribute("intersectX", intersectPoint.x());
+            arrowElement.setAttribute("intersectY", intersectPoint.y());
             sceneElement.appendChild(arrowElement);
+        }
+        else if (CustomTextItem *text = qgraphicsitem_cast<CustomTextItem *>(item))
+        {
+            QDomElement textElement = doc.createElement("Text");
+            textElement.setAttribute("Name", text->getText());
+            textElement.setAttribute("x", text->pos().x());
+            textElement.setAttribute("y", text->pos().y());
+            sceneElement.appendChild(textElement);
         }
     }
 }
@@ -130,27 +148,46 @@ void CustomScene::loadFromXml(const QDomElement &root)
 
     // First pass: Create all CustomItems and store them in a map by their ID
     QMap<int, CustomItem*> itemMap;
-    for (int i = 0; i < itemList.count(); i++) {
+
+    for (int i = 0; i < itemList.count(); i++)
+    {
         QDomElement itemElement = itemList.at(i).toElement();
         QString tagName = itemElement.tagName();
 
-        if (tagName == "CustomItem") {
+        if (tagName == "CustomItem")
+        {
             int id = itemElement.attribute("id").toInt();
             CustomItem::CustomType type = static_cast<CustomItem::CustomType>(itemElement.attribute("type").toInt());
             CustomItem* customItem = new CustomItem(type, myItemMenu);
             customItem->setId(id);
             customItem->setPos(itemElement.attribute("x").toFloat(), itemElement.attribute("y").toFloat());
+            qreal centerX = itemElement.attribute("centerX").toFloat();
+            qreal centerY = itemElement.attribute("centerY").toFloat();
+            QPointF center(centerX, centerY);
             addItem(customItem);
             itemMap[id] = customItem;
+        }
+        else if (tagName == "CustomTextItem")
+        {
+            QString textName = itemElement.attribute("Name");
+            qreal x = itemElement.attribute("x").toFloat();
+            qreal y = itemElement.attribute("y").toFloat();
+
+            CustomTextItem* textItem = new CustomTextItem();
+            textItem->setText(textName);
+            textItem->setPos(x, y);
+            addItem(textItem);
         }
     }
 
     // Second pass: Create all Arrows using the previously created CustomItems
-    for (int i = 0; i < itemList.count(); i++) {
+    for (int i = 0; i < itemList.count(); i++)
+    {
         QDomElement itemElement = itemList.at(i).toElement();
         QString tagName = itemElement.tagName();
 
-        if (tagName == "Arrow") {
+        if (tagName == "Arrow")
+        {
             int startItemId = itemElement.attribute("startItemId").toInt();
             int endItemId = itemElement.attribute("endItemId").toInt();
             QColor color(itemElement.attribute("lineColor"));
@@ -158,9 +195,14 @@ void CustomScene::loadFromXml(const QDomElement &root)
             CustomItem* startItem = itemMap[startItemId];
             CustomItem* endItem = itemMap[endItemId];
 
-            if (startItem && endItem) {
+            if (startItem && endItem)
+            {
                 Arrow* arrow = new Arrow(startItem, endItem);
                 arrow->setColor(color);
+                qreal intersectX = itemElement.attribute("intersectX").toFloat();
+                qreal intersectY = itemElement.attribute("intersectY").toFloat();
+                QPointF intersectPoint(intersectX, intersectY);
+
                 addItem(arrow);
                 startItem->addArrow(arrow);
                 endItem->addArrow(arrow);
@@ -168,6 +210,7 @@ void CustomScene::loadFromXml(const QDomElement &root)
             }
         }
     }
+
 }
 
 

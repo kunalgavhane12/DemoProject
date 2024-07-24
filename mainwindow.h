@@ -11,20 +11,18 @@
 
 class CustomScene;
 
-QT_BEGIN_NAMESPACE
-class QAction;
-class QToolBox;
-class QSpinBox;
-class QComboBox;
-class QFontComboBox;
-class QButtonGroup;
-class QLineEdit;
-class QGraphicsTextItem;
-class QFont;
-class QToolButton;
-class QAbstractButton;
-class QGraphicsView;
-QT_END_NAMESPACE
+#include <QAction>
+#include <QToolBox>
+#include <QSpinBox>
+#include <QComboBox>
+#include <QFontComboBox>
+#include <QButtonGroup>
+#include <QLineEdit>
+#include <QGraphicsTextItem>
+#include <QFont>
+#include <QToolButton>
+#include <QAbstractButton>
+#include <QGraphicsView>
 
 class MainWindow : public QMainWindow
 {
@@ -113,6 +111,7 @@ private:
 
     QMenu *fileMenu;
     QMenu *itemMenu;
+    QMenu *properties;
     QMenu *aboutMenu;
 
     QToolBar *textToolBar;
