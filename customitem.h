@@ -14,6 +14,7 @@
 #include <QStyleOptionGraphicsItem>
 #include <QWidget>
 #include <QPolygonF>
+#include "customtextitem.h"
 
 class Arrow;
 
@@ -28,7 +29,7 @@ public:
     enum Direction {TopLeft = 0, Top, TopRight, Left, Right, BottomLeft, Bottom, BottomRight };
 
     CustomItem(CustomType customType, QMenu *contextMenu, QGraphicsItem *parent = nullptr);
-
+    QString title;
     void removeArrow(Arrow *arrow);
     void removeArrows();
 
@@ -55,6 +56,14 @@ public:
     void setPolygonProperty();
     void setDiamondProperty();
 
+    static double rectangleArea;
+    static double rectanglePerimeter;
+    static double circleArea;
+    static double circleCircumference;
+    static double triangleArea;
+    static double trianglePerimeter;
+
+    void setMainLabelText(const QString &text);
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
@@ -70,6 +79,7 @@ protected:
 private:
     QPolygonF scaledPolygon(QPolygonF const& old, Direction direction, QPointF const& newPos);
 
+    QGraphicsTextItem *textItem;
     CustomType myCustomType;
     QMenu *myContextMenu;
     int myId;
@@ -90,12 +100,6 @@ private:
     bool areConnectedToConditionalItems();
     void performArithmeticOperation();
 
-    double rectangleArea;
-    double rectanglePerimeter;
-    double circleArea;
-    double circleCircumference;
-    double triangleArea;
-    double trianglePerimeter;
 };
 
 #endif // customitem_H

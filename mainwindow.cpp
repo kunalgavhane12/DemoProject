@@ -278,30 +278,43 @@ void MainWindow::ungroupItems()
     backupUndostack();
 }
 
-void MainWindow::rectangleItems()
+void MainWindow::rectangleAreaItem()
 {
+    qDebug() << "Rectangle Action Triggerd";
 
+    qDebug () << "Area of Reactangle : " << CustomItem::rectangleArea;
+
+}
+void MainWindow::rectanglePerimeterItem()
+{
+    qDebug() << "Rectangle Perimeter Action Triggerd";
+
+    qDebug () << "Perimeter of Reactangle : " << CustomItem::rectanglePerimeter;
 
 }
 
 void MainWindow::circleItems()
 {
+    qDebug() << "Circle Action Triggerd";
+    qDebug () << "Area of Circle : " << CustomItem::circleArea;
+    qDebug () << "Circle Circumference : " << CustomItem::circleCircumference;
 
 }
 
 void MainWindow::triangleItems()
 {
-
+    qDebug () << "Area of Triangle : " << CustomItem::triangleArea;
+    qDebug () << "Perimeter of Triangle : " << CustomItem::trianglePerimeter;
 }
 
 void MainWindow::polygonItems()
 {
-
+    qDebug() << "Polygon Action Triggerd";
 }
 
 void MainWindow::diamondItems()
 {
-
+    qDebug() << "Diamond Action Triggerd";
 }
 
 void MainWindow::pointerGroupClicked(int)
@@ -499,8 +512,7 @@ void MainWindow::createToolBox()
     itemWidget->setLayout(layout);
 
     backgroundButtonGroup = new QButtonGroup(this);
-    connect(backgroundButtonGroup, SIGNAL(buttonClicked(QAbstractButton*)),
-            this, SLOT(backgroundButtonGroupClicked(QAbstractButton*)));
+    connect(backgroundButtonGroup, SIGNAL(buttonClicked(QAbstractButton*)),this, SLOT(backgroundButtonGroupClicked(QAbstractButton*)));
 
     QGridLayout *backgroundLayout = new QGridLayout;
     backgroundLayout->addWidget(createBackgroundCellWidget(tr("Blue Grid"),":/Icon/background1.png"), 0, 0);
@@ -617,19 +629,28 @@ void MainWindow::createActions()
     ungroupAction->setStatusTip(tr("Ungroup graphic items"));
     connect(ungroupAction, SIGNAL(triggered()), this, SLOT(ungroupItems()));
 
-    rectangleAction = new QAction (tr("R&ectangle"), this);
-    connect(rectangleAction, SIGNAL(triggered()), this, SLOT(rectangleItems()));
+    rectangleArea = new QAction (tr("&Rectangle Area"), this);
+    connect(rectangleArea, SIGNAL(triggered()), this, SLOT(rectangleAreaItem()));
 
-    circleAction = new QAction(tr("C&ircle"), this);
-    connect(circleAction, SIGNAL(triggered()), this, SLOT(circleItems()));
+    rectanglePerimeter = new QAction (tr("&Rectangle Perimeter"), this);
+    connect(rectanglePerimeter, SIGNAL(triggered()), this, SLOT(rectanglePerimeterItem()));
 
-    triangleAction = new QAction(tr("T&riangle"), this);
-    connect(triangleAction, SIGNAL(triggered()), this, SLOT(triangleItems()));
+    circleArea = new QAction(tr("&Circle Area"), this);
+    connect(circleArea, SIGNAL(triggered()), this, SLOT(circleItems()));
 
-    diamondAction = new QAction(tr("D&iamond"), this);
+    circleCircumference = new QAction(tr("&Circle Circumference"), this);
+    connect(circleCircumference, SIGNAL(triggered()), this, SLOT(circleItems()));
+
+    triangleArea = new QAction(tr("&Triangle Area"), this);
+    connect(triangleArea, SIGNAL(triggered()), this, SLOT(triangleItems()));
+
+    trianglePerimeter = new QAction(tr("&Triangle Perimeter"), this);
+    connect(trianglePerimeter, SIGNAL(triggered()), this, SLOT(triangleItems()));
+
+    diamondAction = new QAction(tr("&Diamond"), this);
     connect(diamondAction, SIGNAL(triggered()), this, SLOT(diamondItems()));
 
-    polygonAction = new QAction(tr("P&olygon"), this);
+    polygonAction = new QAction(tr("&Polygon"), this);
     connect(polygonAction, SIGNAL(triggered()), this, SLOT(polygonItems()));
 
 }
@@ -646,6 +667,25 @@ void MainWindow::createMenus()
     fileMenu->addAction(exitAction);
 
     itemMenu = menuBar()->addMenu(tr("&Edit"));
+
+    QMenu *propertyMenu = itemMenu->addMenu(tr("Reactangle"));
+    propertyMenu->addAction(rectangleArea);
+    propertyMenu->addAction(rectanglePerimeter);
+    propertyMenu->addSeparator();
+
+    propertyMenu = itemMenu->addMenu(tr("&Circle"));
+    propertyMenu->addAction(circleArea);
+    propertyMenu->addAction(circleCircumference);
+    propertyMenu->addSeparator();
+
+    propertyMenu = itemMenu->addMenu(tr("&Triangle"));
+    propertyMenu->addAction(triangleArea);
+    propertyMenu->addAction(trianglePerimeter);
+    propertyMenu->addSeparator();
+
+    propertyMenu->addAction(diamondAction);
+    propertyMenu->addAction(polygonAction);
+
     itemMenu->addAction(copyAction);
     itemMenu->addAction(cutAction);
     itemMenu->addAction(pasteAction);
@@ -659,13 +699,7 @@ void MainWindow::createMenus()
     itemMenu->addSeparator();
     itemMenu->addAction(toFrontAction);
     itemMenu->addAction(sendBackAction);
-
-    properties = menuBar()->addMenu(tr("&Properties"));
-    properties->addAction(rectangleAction);
-    properties->addAction(circleAction);
-    properties->addAction(triangleAction);
-    properties->addAction(diamondAction);
-    properties->addAction(polygonAction);
+    itemMenu->addSeparator();
 
 
     aboutMenu = menuBar()->addMenu(tr("&Help"));

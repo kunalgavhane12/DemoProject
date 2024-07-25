@@ -23,8 +23,8 @@ QRectF Arrow::boundingRect() const
 
     return QRectF(line().p1(), QSizeF(line().p2().x() - line().p1().x(),
                                       line().p2().y() - line().p1().y()))
-        .normalized()
-        .adjusted(-extra, -extra, extra, extra);
+            .normalized()
+            .adjusted(-extra, -extra, extra, extra);
 }
 
 QPainterPath Arrow::shape() const
@@ -73,9 +73,11 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
 
     setLine(centerLine);
 
+//    double angle = std::atan2(-line().dy(), line().dx());
     double angle = ::acos(line().dx() / line().length());
     if (line().dy() >= 0)
         angle = (Pi * 2) - angle;
+
 
     QPointF arrowP1 = line().p1() + QPointF(sin(angle + Pi / 3) * arrowSize,
                                             cos(angle + Pi / 3) * arrowSize);
@@ -86,7 +88,7 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     arrowHead << line().p1() << arrowP1 << arrowP2;
 
     painter->drawLine(line());
-    painter->drawPolygon(arrowHead);
+//    painter->drawPolygon(arrowHead);
 
     // Draw circles at the connection points
     painter->setBrush(Qt::black);
@@ -110,7 +112,7 @@ QPointF Arrow::calculateIntersectionPoint(const QPolygonF &polygon, CustomItem *
     QPointF p2;
     QPointF intersectPoint;
     QLineF polyLine;
-    for (int i = 1; i < polygon.count(); ++i)
+    for (int i = 1; i < polygon.count(); i++)
     {
         p2 = polygon.at(i) + item->pos();
         polyLine = QLineF(p1, p2);

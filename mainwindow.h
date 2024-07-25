@@ -47,7 +47,8 @@ private slots:
     void groupItems();
     void ungroupItems();
 
-    void rectangleItems();
+    void rectangleAreaItem();
+    void rectanglePerimeterItem();
     void circleItems();
     void triangleItems();
     void diamondItems();
@@ -119,7 +120,6 @@ private:
 
     QMenu *fileMenu;
     QMenu *itemMenu;
-    QMenu *properties;
     QMenu *aboutMenu;
 
     QToolBar *textToolBar;
@@ -141,9 +141,15 @@ private:
     QToolButton *fillColorToolButton;
     QToolButton *lineColorToolButton;
 
-    QAction *rectangleAction;
-    QAction *circleAction;
-    QAction *triangleAction;
+//    QAction *rectangleAction;
+    QAction *rectangleArea;
+    QAction *rectanglePerimeter;
+//    QAction *circleAction;
+    QAction *circleArea;
+    QAction *circleCircumference;
+//    QAction *triangleAction;
+    QAction *triangleArea;
+    QAction *trianglePerimeter;
     QAction *polygonAction;
     QAction *diamondAction;
 
