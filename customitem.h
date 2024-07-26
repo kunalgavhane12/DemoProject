@@ -24,7 +24,9 @@ class CustomItem : public QGraphicsPolygonItem
 public:
     enum { Type = UserType + 15 };
 
-    enum CustomType { Rectangle, Circle, Triangle, Diamond, Polygon, Output, Io};
+    enum CustomType { Rectangle, Circle, Triangle, Diamond, Polygon, Output, Io,
+                      TractorBlack, TractorOk, TractorOnField, TractorOrange, TractorRed,
+                      TractorTransperant, TractorYellow};
 
     enum Direction {TopLeft = 0, Top, TopRight, Left, Right, BottomLeft, Bottom, BottomRight };
 
@@ -64,6 +66,7 @@ public:
     static double trianglePerimeter;
 
     void setMainLabelText(const QString &text);
+    void setPixmap(const QPixmap &pixmap);
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;

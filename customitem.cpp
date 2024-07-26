@@ -24,8 +24,8 @@ CustomItem::CustomItem(CustomType customType, QMenu *contextMenu, QGraphicsItem 
     myCustomType = customType;
     myContextMenu = contextMenu;
     myId = idCounter++;
-
     QPainterPath path;
+    QPixmap pixmap;
     switch (myCustomType) {
     case Output:
         path.moveTo(200, 50);
@@ -37,6 +37,7 @@ CustomItem::CustomItem(CustomType customType, QMenu *contextMenu, QGraphicsItem 
         myPolygon = path.toFillPolygon().translated(-125, -50);
         textItem = new QGraphicsTextItem("Result :", this);
         textItem->setPos(-40, -20);
+        setPolygon(myPolygon);
         break;
     case Diamond:
         myPolygon << QPointF(-75, 0) << QPointF(0, 75)
@@ -44,8 +45,7 @@ CustomItem::CustomItem(CustomType customType, QMenu *contextMenu, QGraphicsItem 
                   << QPointF(-75, 0);
         textItem = new QGraphicsTextItem("Diamond", this);
         textItem->setPos(-30, -10);
-        textItem = new QGraphicsTextItem("Diamond", this);
-        textItem->setPos(-30, -20);
+        setPolygon(myPolygon);
         break;
     case Rectangle:
         myPolygon << QPointF(-60, -60) << QPointF(60, -60)
@@ -53,6 +53,7 @@ CustomItem::CustomItem(CustomType customType, QMenu *contextMenu, QGraphicsItem 
                   << QPointF(-60, -60);
         textItem = new QGraphicsTextItem("Length : \nWidth :", this);
         textItem->setPos(-40, -40);
+        setPolygon(myPolygon);
         break;
     case Triangle:
         myPolygon << QPointF(0, -75) << QPointF(65, 65)
@@ -60,26 +61,72 @@ CustomItem::CustomItem(CustomType customType, QMenu *contextMenu, QGraphicsItem 
 
         textItem = new QGraphicsTextItem("Base :\nAltitude :\nHypotenuse :\nHeight :", this);
         textItem->setPos(-40, 10);
+        setPolygon(myPolygon);
         break;
     case Circle:
         path.addEllipse(QPointF(0, 0), 50, 50);
         myPolygon = path.toFillPolygon();
         textItem = new QGraphicsTextItem("Radius : ", this);
         textItem->setPos(-20, -10);
+        setPolygon(myPolygon);
+        break;
+    case TractorBlack:
+        pixmap.load(":/Icon/tractor_black.png");
+        setPixmap(pixmap);
+        break;
+    case TractorOk:
+        pixmap.load(":/Icon/tractor_ok.png");
+        setPixmap(pixmap);
+        break;
+    case TractorOnField:
+        pixmap.load(":/Icon/tractor_on_field.png");
+        setPixmap(pixmap);
+        break;
+    case TractorRed:
+        pixmap.load(":/Icon/tractor_red.png");
+        setPixmap(pixmap);
+        break;
+    case TractorTransperant:
+        pixmap.load(":/Icon/tractor_transparent.png");
+        setPixmap(pixmap);
+        break;
+    case TractorYellow:
+        pixmap.load(":/Icon/tractor_yellow.png");
+        setPixmap(pixmap);
         break;
     default:
         myPolygon << QPointF(-60, -40) << QPointF(-35, 40)
                   << QPointF(60, 40) << QPointF(35, -40)
                   << QPointF(-60, -40);
+        setPolygon(myPolygon);
         break;
     }
 
-    setPolygon(myPolygon);
     setFlag(QGraphicsItem::ItemIsMovable, true);
     setFlag(QGraphicsItem::ItemIsSelectable, true);
     setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
 }
+
+void CustomItem::setPixmap(const QPixmap &pixmap)
+{
+    QList<QGraphicsItem*> items = childItems();
+        foreach (QGraphicsItem* item, items) {
+            if (dynamic_cast<QGraphicsPolygonItem*>(item)) {
+                item->setVisible(false);
+            }
+        }
+    QGraphicsPixmapItem *pixmapItem = new QGraphicsPixmapItem(pixmap, this);
+    pixmapItem->setPos(-pixmap.width() / 2, -pixmap.height() / 2);
+    pixmapItem->setFlag(QGraphicsItem::ItemIsMovable, true);
+    pixmapItem->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    pixmapItem->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
+    pixmapItem->setAcceptHoverEvents(true);
+
+
+}
+
+
 
 void CustomItem::setMainLabelText(const QString &text)
 {
@@ -205,7 +252,7 @@ void CustomItem::setTriangleProperty()
     trianglePerimeter = altitude + base + hypotenuse;
 
     textItem->setPlainText("Base : "+QString::number(base)+"\nAltitude : "+QString::number(altitude)+""
-                            "\nHypotenuse :"+QString::number(hypotenuse)+"\nHeight : " + QString::number(height));
+                                                                                                     "\nHypotenuse :"+QString::number(hypotenuse)+"\nHeight : " + QString::number(height));
     textItem->setPos(-40,-10);
 
     qDebug() << "Triangle Property " << base << " " << height << " " << triangleArea << " " << trianglePerimeter;
@@ -226,6 +273,14 @@ void CustomItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
     resizeMode = false;
     int index = 0;
+
+    if (dynamic_cast<QGraphicsPixmapItem*>(this))
+    {
+        QGraphicsItem::mousePressEvent(event);
+        return;
+    }
+    QGraphicsPolygonItem::mousePressEvent(event);
+
     foreach (QPointF const& p, resizeHandlePoints())
     {
         if (isCloseEnough(event->pos(), p))
@@ -253,6 +308,12 @@ void CustomItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 
 void CustomItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
+    if (dynamic_cast<QGraphicsPixmapItem*>(this))
+    {
+        QGraphicsItem::mouseMoveEvent(event);
+        return;
+    }
+    QGraphicsPolygonItem::mouseMoveEvent(event);
     if (resizeMode)
     {
         prepareGeometryChange();
@@ -264,6 +325,12 @@ void CustomItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
 void CustomItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
+    if (dynamic_cast<QGraphicsPixmapItem*>(this))
+    {
+        QGraphicsItem::mouseReleaseEvent(event);
+        return;
+    }
+    QGraphicsPolygonItem::mouseReleaseEvent(event);
     if (resizeMode)
     {
         qDebug() << "after resizing";
@@ -310,10 +377,8 @@ void CustomItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event)
     QGraphicsItem::hoverMoveEvent(event);
 }
 
-void CustomItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option,
-                       QWidget* widget)
+void CustomItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
-    // remove build-in selected state
     QStyleOptionGraphicsItem myOption(*option);
     myOption.state &= ~QStyle::State_Selected;
     QGraphicsPolygonItem::paint(painter, &myOption, widget);

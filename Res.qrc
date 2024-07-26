@@ -22,5 +22,13 @@
         <file>Icon/underline.png</file>
         <file>Icon/undo.png</file>
         <file>Icon/ungroup.png</file>
+        <file>Icon/result.png</file>
+        <file>Icon/tractor_black.png</file>
+        <file>Icon/tractor_ok.png</file>
+        <file>Icon/tractor_On_Field.png</file>
+        <file>Icon/tractor_orange.png</file>
+        <file>Icon/tractor_red.png</file>
+        <file>Icon/tractor_transperant.png</file>
+        <file>Icon/tractor_yellow.png</file>
     </qresource>
 </RCC>

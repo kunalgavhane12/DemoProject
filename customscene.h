@@ -58,6 +58,7 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void wheelEvent(QGraphicsSceneWheelEvent* wheelEvent) override;
 
+
 private:
     void mouseDraggingMoveEvent(QGraphicsSceneMouseEvent* event);
     void clearOrthogonalLines();

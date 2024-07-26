@@ -486,12 +486,60 @@ void MainWindow::createToolBox()
     buttonGroup->setExclusive(false);
     connect(buttonGroup, SIGNAL(buttonClicked(int)), this, SLOT(buttonGroupClicked(int)));
     QGridLayout *layout = new QGridLayout;
-    layout->addWidget(createCellWidget(tr("OutPut"), CustomItem::Output), 0, 0);
-    layout->addWidget(createCellWidget(tr("Rectangle"), CustomItem::Rectangle),0, 1);
-    layout->addWidget(createCellWidget(tr("Triangle"), CustomItem::Triangle), 1, 0);
-    layout->addWidget(createCellWidget(tr("Circle"), CustomItem::Circle), 1, 1);
-    layout->addWidget(createCellWidget(tr("Polygon"), CustomItem::Io), 2, 0);
-    layout->addWidget(createCellWidget(tr("Diamond"), CustomItem::Diamond), 2, 1);
+
+    QWidget *itemWidget = new QWidget;
+    itemWidget->setLayout(layout);
+
+    for (int i = 0; i < 7; ++i)
+    {
+        QToolButton *imageButton = new QToolButton;
+        imageButton->setCheckable(true);
+        buttonGroup->addButton(imageButton);
+        QGridLayout *imageLayout = new QGridLayout;
+        switch(i){
+        case 0:
+            imageButton->setIcon(QIcon(QPixmap(QString(":/Icon/tractor_black.png"))));
+            imageLayout->addWidget(new QLabel("Tractor Black"), 1, 0, Qt::AlignCenter);
+            break;
+        case 1:
+            imageButton->setIcon(QIcon(QPixmap(QString(":/Icon/tractor_ok.png"))));
+            imageLayout->addWidget(new QLabel("Tractor Ok"), 1, 0, Qt::AlignCenter);
+            break;
+        case 2:
+            imageButton->setIcon(QIcon(QPixmap(QString(":/Icon/tractor_On_Field.png"))));
+            imageLayout->addWidget(new QLabel("Tractor On Field"), 1, 0, Qt::AlignCenter);
+            break;
+        case 3:
+            imageButton->setIcon(QIcon(QPixmap(QString(":/Icon/tractor_orange.png"))));
+            imageLayout->addWidget(new QLabel("Tractor Orange"), 1, 0, Qt::AlignCenter);
+            break;
+        case 4:
+            imageButton->setIcon(QIcon(QPixmap(QString(":/Icon/tractor_red.png"))));
+            imageLayout->addWidget(new QLabel("Tractor Red"), 1, 0, Qt::AlignCenter);
+            break;
+        case 5:
+            imageButton->setIcon(QIcon(QPixmap(QString(":/Icon/tractor_transperant.png"))));
+            imageLayout->addWidget(new QLabel("Tractor Transperant"), 1, 0, Qt::AlignCenter);
+            break;
+        case 6:
+            imageButton->setIcon(QIcon(QPixmap(QString(":/Icon/tractor_yellow.png"))));
+            imageLayout->addWidget(new QLabel("Tractor Yellow"), 1, 0, Qt::AlignCenter);
+            break;
+        }
+        imageButton->setIconSize(QSize(50, 50));
+        imageLayout->addWidget(imageButton, 0, 0, Qt::AlignHCenter);
+        QWidget *imageWidget = new QWidget;
+        imageWidget->setLayout(imageLayout);
+        layout->addWidget(imageWidget, 0 + i / 2, i % 2);
+
+    }
+
+    layout->addWidget(createCellWidget(tr("OutPut"), CustomItem::Output), 8, 0);
+    layout->addWidget(createCellWidget(tr("Rectangle"), CustomItem::Rectangle),8, 1);
+    layout->addWidget(createCellWidget(tr("Triangle"), CustomItem::Triangle), 9, 0);
+    layout->addWidget(createCellWidget(tr("Circle"), CustomItem::Circle), 9, 1);
+    layout->addWidget(createCellWidget(tr("Polygon"), CustomItem::Io), 10, 0);
+    layout->addWidget(createCellWidget(tr("Diamond"), CustomItem::Diamond), 10, 1);
 
     QToolButton *textButton = new QToolButton;
     textButton->setCheckable(true);
@@ -503,13 +551,14 @@ void MainWindow::createToolBox()
     textLayout->addWidget(new QLabel(tr("Text")), 1, 0, Qt::AlignCenter);
     QWidget *textWidget = new QWidget;
     textWidget->setLayout(textLayout);
-    layout->addWidget(textWidget, 3, 0);
+    layout->addWidget(textWidget, 7, 0);
 
-    layout->setRowStretch(3, 10);
+    layout->setRowStretch(7, 10);
     layout->setColumnStretch(2, 10);
 
-    QWidget *itemWidget = new QWidget;
-    itemWidget->setLayout(layout);
+
+    layout->setRowStretch(6, 10);
+    layout->setColumnStretch(2, 10);
 
     backgroundButtonGroup = new QButtonGroup(this);
     connect(backgroundButtonGroup, SIGNAL(buttonClicked(QAbstractButton*)),this, SLOT(backgroundButtonGroupClicked(QAbstractButton*)));
@@ -530,7 +579,7 @@ void MainWindow::createToolBox()
     toolBox->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Ignored));
     toolBox->setMinimumWidth(itemWidget->sizeHint().width());
     toolBox->addItem(itemWidget, tr("Basic Flowchart Shapes"));
-    //    toolBox->addItem(backgroundWidget, tr("Backgrounds"));
+    toolBox->addItem(backgroundWidget, tr("Backgrounds"));
 }
 
 void MainWindow::createActions()
@@ -729,7 +778,7 @@ void MainWindow::createToolbars()
 
     fontSizeCombo = new QComboBox;
     fontSizeCombo->setEditable(true);
-    for (int i = 8; i < 30; i = i + 2)
+    for (int i = 12; i < 30; i = i + 2)
         fontSizeCombo->addItem(QString().setNum(i));
     QIntValidator *validator = new QIntValidator(2, 64, this);
     fontSizeCombo->setValidator(validator);
