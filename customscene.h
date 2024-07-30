@@ -13,6 +13,7 @@
 #include <QFont>
 #include <QGraphicsTextItem>
 #include <QColor>
+#include <QMimeData>
 
 class CustomScene : public QGraphicsScene
 {
@@ -58,6 +59,10 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void wheelEvent(QGraphicsSceneWheelEvent* wheelEvent) override;
 
+
+    void dragMoveEvent(QGraphicsSceneDragDropEvent *event)override;
+    void dragEnterEvent(QGraphicsSceneDragDropEvent *event)override;
+    void dropEvent(QGraphicsSceneDragDropEvent *event)override;
 
 private:
     void mouseDraggingMoveEvent(QGraphicsSceneMouseEvent* event);

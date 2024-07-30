@@ -70,30 +70,7 @@ CustomItem::CustomItem(CustomType customType, QMenu *contextMenu, QGraphicsItem 
         textItem->setPos(-20, -10);
         setPolygon(myPolygon);
         break;
-    case TractorBlack:
-        pixmap.load(":/Icon/tractor_black.png");
-        setPixmap(pixmap);
-        break;
-    case TractorOk:
-        pixmap.load(":/Icon/tractor_ok.png");
-        setPixmap(pixmap);
-        break;
-    case TractorOnField:
-        pixmap.load(":/Icon/tractor_on_field.png");
-        setPixmap(pixmap);
-        break;
-    case TractorRed:
-        pixmap.load(":/Icon/tractor_red.png");
-        setPixmap(pixmap);
-        break;
-    case TractorTransperant:
-        pixmap.load(":/Icon/tractor_transparent.png");
-        setPixmap(pixmap);
-        break;
-    case TractorYellow:
-        pixmap.load(":/Icon/tractor_yellow.png");
-        setPixmap(pixmap);
-        break;
+
     default:
         myPolygon << QPointF(-60, -40) << QPointF(-35, 40)
                   << QPointF(60, 40) << QPointF(35, -40)
@@ -107,26 +84,6 @@ CustomItem::CustomItem(CustomType customType, QMenu *contextMenu, QGraphicsItem 
     setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
     setAcceptHoverEvents(true);
 }
-
-void CustomItem::setPixmap(const QPixmap &pixmap)
-{
-    QList<QGraphicsItem*> items = childItems();
-        foreach (QGraphicsItem* item, items) {
-            if (dynamic_cast<QGraphicsPolygonItem*>(item)) {
-                item->setVisible(false);
-            }
-        }
-    QGraphicsPixmapItem *pixmapItem = new QGraphicsPixmapItem(pixmap, this);
-    pixmapItem->setPos(-pixmap.width() / 2, -pixmap.height() / 2);
-    pixmapItem->setFlag(QGraphicsItem::ItemIsMovable, true);
-    pixmapItem->setFlag(QGraphicsItem::ItemIsSelectable, true);
-    pixmapItem->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
-    pixmapItem->setAcceptHoverEvents(true);
-
-
-}
-
-
 
 void CustomItem::setMainLabelText(const QString &text)
 {

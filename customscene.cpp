@@ -213,8 +213,6 @@ void CustomScene::loadFromXml(const QDomElement &root)
 
 }
 
-
-
 void CustomScene::setMode(Mode mode)
 {
     myMode = mode;
@@ -242,6 +240,48 @@ void CustomScene::editorLostFocus(CustomTextItem *item)
         }
     }
 
+}
+
+void CustomScene::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
+{
+    if (event->mimeData()->hasFormat("application/x-dnditemdata")) {
+        event->setDropAction(Qt::CopyAction);
+        event->accept();
+    } else {
+        event->ignore();
+    }
+}
+
+void CustomScene::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
+{
+    if (event->mimeData()->hasFormat("application/x-dnditemdata")) {
+        event->setDropAction(Qt::CopyAction);
+        event->accept();
+    } else {
+        event->ignore();
+    }
+}
+
+void CustomScene::dropEvent(QGraphicsSceneDragDropEvent *event)
+{
+    if (event->mimeData()->hasFormat("application/x-dnditemdata")) {
+        QByteArray itemData = event->mimeData()->data("application/x-dnditemdata");
+        QDataStream dataStream(&itemData, QIODevice::ReadOnly);
+
+        QPixmap pixmap;
+        dataStream >> pixmap;
+
+        QGraphicsPixmapItem *newItem = new QGraphicsPixmapItem(pixmap);
+        newItem->setPos(event->scenePos());
+        newItem->setFlag(QGraphicsItem::ItemIsMovable);
+        newItem->setFlag(QGraphicsItem::ItemIsSelectable);
+        addItem(newItem);
+
+        event->setDropAction(Qt::CopyAction);
+        event->accept();
+    } else {
+        event->ignore();
+    }
 }
 
 void CustomScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)

@@ -479,63 +479,86 @@ void MainWindow::about()
     QMessageBox::about(this, tr("About Demo Project"), tr("A drawing tool."));
 }
 
+QWidget* MainWindow::createImageButton(const QString &iconPath, const QString &labelText)
+{
+    QToolButton *imageButton = new QToolButton;
+    imageButton->setCheckable(true);
+    imageButton->setIcon(QIcon(QPixmap(iconPath)));
+    imageButton->setIconSize(QSize(50, 50));
+    buttonGroup->addButton(imageButton);
+
+    QGridLayout *imageLayout = new QGridLayout;
+    imageLayout->addWidget(imageButton, 0, 0, Qt::AlignHCenter);
+    imageLayout->addWidget(new QLabel(labelText), 1, 0, Qt::AlignCenter);
+
+    QWidget *imageWidget = new QWidget;
+    imageWidget->setLayout(imageLayout);
+
+    imageButton->setMouseTracking(true);
+    imageButton->installEventFilter(this);
+
+    return imageWidget;
+}
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        if (mouseEvent->button() == Qt::LeftButton) {
+            QToolButton *button = qobject_cast<QToolButton *>(obj);
+            if (button) {
+                QByteArray itemData;
+                QDataStream dataStream(&itemData, QIODevice::WriteOnly);
+                dataStream << button->icon().pixmap(button->iconSize());
+
+                QMimeData *mimeData = new QMimeData;
+                mimeData->setData("application/x-dnditemdata", itemData);
+
+                QDrag *drag = new QDrag(this);
+                drag->setMimeData(mimeData);
+                drag->setHotSpot(QPoint(button->iconSize().width()/2, button->iconSize().height()/2));
+                drag->setPixmap(button->icon().pixmap(button->iconSize()));
+
+                drag->exec(Qt::CopyAction | Qt::MoveAction, Qt::CopyAction);
+            }
+        }
+    }
+    return QObject::eventFilter(obj, event);
+}
 
 void MainWindow::createToolBox()
 {
     buttonGroup = new QButtonGroup(this);
     buttonGroup->setExclusive(false);
     connect(buttonGroup, SIGNAL(buttonClicked(int)), this, SLOT(buttonGroupClicked(int)));
-    QGridLayout *layout = new QGridLayout;
 
+    QGridLayout *layout = new QGridLayout;
     QWidget *itemWidget = new QWidget;
     itemWidget->setLayout(layout);
 
-    for (int i = 0; i < 7; ++i)
-    {
-        QToolButton *imageButton = new QToolButton;
-        imageButton->setCheckable(true);
-        buttonGroup->addButton(imageButton);
-        QGridLayout *imageLayout = new QGridLayout;
-        switch(i){
-        case 0:
-            imageButton->setIcon(QIcon(QPixmap(QString(":/Icon/tractor_black.png"))));
-            imageLayout->addWidget(new QLabel("Tractor Black"), 1, 0, Qt::AlignCenter);
-            break;
-        case 1:
-            imageButton->setIcon(QIcon(QPixmap(QString(":/Icon/tractor_ok.png"))));
-            imageLayout->addWidget(new QLabel("Tractor Ok"), 1, 0, Qt::AlignCenter);
-            break;
-        case 2:
-            imageButton->setIcon(QIcon(QPixmap(QString(":/Icon/tractor_On_Field.png"))));
-            imageLayout->addWidget(new QLabel("Tractor On Field"), 1, 0, Qt::AlignCenter);
-            break;
-        case 3:
-            imageButton->setIcon(QIcon(QPixmap(QString(":/Icon/tractor_orange.png"))));
-            imageLayout->addWidget(new QLabel("Tractor Orange"), 1, 0, Qt::AlignCenter);
-            break;
-        case 4:
-            imageButton->setIcon(QIcon(QPixmap(QString(":/Icon/tractor_red.png"))));
-            imageLayout->addWidget(new QLabel("Tractor Red"), 1, 0, Qt::AlignCenter);
-            break;
-        case 5:
-            imageButton->setIcon(QIcon(QPixmap(QString(":/Icon/tractor_transperant.png"))));
-            imageLayout->addWidget(new QLabel("Tractor Transperant"), 1, 0, Qt::AlignCenter);
-            break;
-        case 6:
-            imageButton->setIcon(QIcon(QPixmap(QString(":/Icon/tractor_yellow.png"))));
-            imageLayout->addWidget(new QLabel("Tractor Yellow"), 1, 0, Qt::AlignCenter);
-            break;
-        }
-        imageButton->setIconSize(QSize(50, 50));
-        imageLayout->addWidget(imageButton, 0, 0, Qt::AlignHCenter);
-        QWidget *imageWidget = new QWidget;
-        imageWidget->setLayout(imageLayout);
-        layout->addWidget(imageWidget, 0 + i / 2, i % 2);
+    struct IconData {
+        QString iconPath;
+        QString label;
+    };
 
+    QVector<IconData> icons = {
+        {":/Icon/tractor_black.png", "Tractor Black"},
+        {":/Icon/tractor_ok.png", "Tractor Ok"},
+        {":/Icon/tractor_On_Field.png", "Tractor On Field"},
+        {":/Icon/tractor_orange.png", "Tractor Orange"},
+        {":/Icon/tractor_red.png", "Tractor Red"},
+        {":/Icon/tractor_transperant.png", "Tractor Transperant"},
+        {":/Icon/tractor_yellow.png", "Tractor Yellow"}
+    };
+
+    for (int i = 0; i < icons.size(); ++i)
+    {
+        QWidget *imageWidget = createImageButton(icons[i].iconPath, icons[i].label);
+        layout->addWidget(imageWidget, i / 2, i % 2);
     }
 
     layout->addWidget(createCellWidget(tr("OutPut"), CustomItem::Output), 8, 0);
-    layout->addWidget(createCellWidget(tr("Rectangle"), CustomItem::Rectangle),8, 1);
+    layout->addWidget(createCellWidget(tr("Rectangle"), CustomItem::Rectangle), 8, 1);
     layout->addWidget(createCellWidget(tr("Triangle"), CustomItem::Triangle), 9, 0);
     layout->addWidget(createCellWidget(tr("Circle"), CustomItem::Circle), 9, 1);
     layout->addWidget(createCellWidget(tr("Polygon"), CustomItem::Io), 10, 0);
@@ -546,6 +569,7 @@ void MainWindow::createToolBox()
     buttonGroup->addButton(textButton, InsertTextButton);
     textButton->setIcon(QIcon(QPixmap(":/Icon/textpointer.png")));
     textButton->setIconSize(QSize(50, 50));
+
     QGridLayout *textLayout = new QGridLayout;
     textLayout->addWidget(textButton, 0, 0, Qt::AlignHCenter);
     textLayout->addWidget(new QLabel(tr("Text")), 1, 0, Qt::AlignCenter);
@@ -556,18 +580,14 @@ void MainWindow::createToolBox()
     layout->setRowStretch(7, 10);
     layout->setColumnStretch(2, 10);
 
-
-    layout->setRowStretch(6, 10);
-    layout->setColumnStretch(2, 10);
-
     backgroundButtonGroup = new QButtonGroup(this);
-    connect(backgroundButtonGroup, SIGNAL(buttonClicked(QAbstractButton*)),this, SLOT(backgroundButtonGroupClicked(QAbstractButton*)));
+    connect(backgroundButtonGroup, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(backgroundButtonGroupClicked(QAbstractButton*)));
 
     QGridLayout *backgroundLayout = new QGridLayout;
-    backgroundLayout->addWidget(createBackgroundCellWidget(tr("Blue Grid"),":/Icon/background1.png"), 0, 0);
-    backgroundLayout->addWidget(createBackgroundCellWidget(tr("White Grid"),":/Icon/background2.png"), 0, 1);
+    backgroundLayout->addWidget(createBackgroundCellWidget(tr("Blue Grid"), ":/Icon/background1.png"), 0, 0);
+    backgroundLayout->addWidget(createBackgroundCellWidget(tr("White Grid"), ":/Icon/background2.png"), 0, 1);
     backgroundLayout->addWidget(createBackgroundCellWidget(tr("Gray Grid"), ":/Icon/background3.png"), 1, 0);
-    backgroundLayout->addWidget(createBackgroundCellWidget(tr("No Grid"),":/Icon/background4.png"), 1, 1);
+    backgroundLayout->addWidget(createBackgroundCellWidget(tr("No Grid"), ":/Icon/background4.png"), 1, 1);
 
     backgroundLayout->setRowStretch(2, 10);
     backgroundLayout->setColumnStretch(2, 10);
@@ -581,6 +601,7 @@ void MainWindow::createToolBox()
     toolBox->addItem(itemWidget, tr("Basic Flowchart Shapes"));
     toolBox->addItem(backgroundWidget, tr("Backgrounds"));
 }
+
 
 void MainWindow::createActions()
 {

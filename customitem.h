@@ -24,9 +24,7 @@ class CustomItem : public QGraphicsPolygonItem
 public:
     enum { Type = UserType + 15 };
 
-    enum CustomType { Rectangle, Circle, Triangle, Diamond, Polygon, Output, Io,
-                      TractorBlack, TractorOk, TractorOnField, TractorOrange, TractorRed,
-                      TractorTransperant, TractorYellow};
+    enum CustomType { Rectangle, Circle, Triangle, Diamond, Polygon, Output, Io };
 
     enum Direction {TopLeft = 0, Top, TopRight, Left, Right, BottomLeft, Bottom, BottomRight };
 

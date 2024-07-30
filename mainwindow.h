@@ -31,6 +31,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow();
 
+protected slots:
+    bool eventFilter(QObject *obj, QEvent *event);
 private slots:
     void backgroundButtonGroupClicked(QAbstractButton *button);
     void buttonGroupClicked(int id);
@@ -159,6 +161,7 @@ private:
     QAction *textAction;
     QAction *fillAction;
     QAction *lineAction;
+    QWidget *createImageButton(const QString &iconPath, const QString &labelText);
 };
 
 #endif // MAINWINDOW_H
